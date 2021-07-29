@@ -6,10 +6,6 @@ const he = require('he')
 const textVersion = require('textversionjs')
 
 
-const xml = fs.readFileSync('chart.xml').toString()
-const json = parser.parse(xml, { ignoreAttributes: false })
-const cells = json.mxGraphModel.root.mxCell
-
 // Utilities
 const remove_attr = props => cell => {
   for (const prop of props)
@@ -92,6 +88,10 @@ const to_sql = (rows, merchant_id) => {
 
 
 // Akshully working on the data
+const xml = fs.readFileSync('chart.xml').toString()
+const json = parser.parse(xml, { ignoreAttributes: false })
+const cells = json.mxGraphModel.root.mxCell
+
 const purified = cells
   .map(remove_attr(['mxGeometry', '@_style', '@_parent']))
   .filter(not_basically_empty)
