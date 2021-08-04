@@ -1,10 +1,18 @@
 'use strict'
 
+if(process.argv.length == 2) {
+  console.log('maxGraph chat diagram to Resolvd sql converter')
+  console.log('Usage: node index.js [xml file to convert] [optional starting row id]')
+  process.exit()
+}
+
+const FILENAME = process.argv[2]
+const START_ID = process.argv[3] ? process.argv[3] : 0
+
 const parser = require('fast-xml-parser')
 const fs = require('fs')
 const he = require('he')
 const textVersion = require('textversionjs')
-
 
 // Utilities
 const remove_attr = props => cell => {
@@ -88,7 +96,7 @@ const to_sql = (rows, merchant_id) => {
 
 
 // Akshully working on the data
-const xml = fs.readFileSync('chart.xml').toString()
+const xml = fs.readFileSync(FILENAME).toString()
 const json = parser.parse(xml, { ignoreAttributes: false })
 const cells = json.mxGraphModel.root.mxCell
 
@@ -107,7 +115,7 @@ const links = purified
 
 const rows_linked = link_up(rows, links)
 const rows_buttoned = collapse_buttons(rows_linked)
-const renumbered = renumber(rows_buttoned)
+const renumbered = renumber(rows_buttoned, START_ID)
 const sql = to_sql(renumbered, 15)
 
 console.log(sql)
